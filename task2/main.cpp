@@ -10,6 +10,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <math.h>
+#include <vector>
 using namespace std;
 
 
@@ -41,21 +42,45 @@ int main(int argc, const char * argv[]) {
             double p1 = cnk * pow(1.0 * (n) / L, i) * pow(1.0 * (L - n) / L, k - i);
             pp += p1;
 
-            double cnk2 = 1;
-            for (int j = 1; j < i / 2; ++j) {
-                cnk2 = cnk2 * (i - j + 1) / j;
-            }
             double px = 0;
-            if (i % 2 == 0) { // equal probabilities
-                cnk2 = cnk2 * (i - (i/2) + 1) / (i/2);
-                px += 0.5 * pow(p, i / 2) * pow(1 - p, i - i/2) * cnk2;
+            vector< vector<double> > M(i, vector< double >(i + 1));
+
+//            vector< vector<double> > M(i, vector< double >(i));  // i x i matrix
+            M[0][0] = (1-p);
+            M[0][1] = p;
+            for (int j = 0; j < i-1; ++j) {
+                for (int k = 0; k < i; ++k) {
+                    M[j+1][k]     += M[j][k] * (1 - p);
+                    M[j+1][k + 1] += M[j][k] * p;
+                }
             }
-            // C N K
-            for (int j = i/2 + 1; j <= i; ++j) {
-                cnk2 = cnk2 * (i - j + 1) / j;
-                px += pow(p, j) * pow(1 - p, i - j) * cnk2; // all errors are errors
+//            double CHECK = 0;
+//            for (int k = 0; k <= i; ++k) {
+//                CHECK += M[i-1][k];
+//            }
+//            cout << "Check " << CHECK << endl;
+            if (i % 2 == 0) {
+                res += 0.5 * p1 * M[i-1][i / 2];
             }
-            res += p1 * px;
+            for (int k = i / 2 + 1; k <= i; ++k) {
+                res += p1 * M[i-1][k];
+            }
+            
+    
+//            double cnk2 = 1;
+//            for (int j = 1; j < i / 2; ++j) {
+//                cnk2 = cnk2 * (i - j + 1) / j;
+//            }
+//            if (i % 2 == 0) { // equal probabilities
+//                cnk2 = cnk2 * (i - (i/2) + 1) / (i/2);
+//                px += 0.5 * pow(p, i / 2) * pow(1 - p, i - i/2) * cnk2;
+//            }
+//            // C N K
+//            for (int j = i/2 + 1; j <= i; ++j) {
+//                cnk2 = cnk2 * (i - j + 1) / j;
+//                px += pow(p, j) * pow(1 - p, i - j) * cnk2; // all errors are errors
+//            }
+//            res += p1 * px;
         }
         out << res * L << endl;
     }
