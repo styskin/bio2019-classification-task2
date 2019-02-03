@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
+#include <iomanip>
 using namespace std;
 
 
@@ -55,8 +56,7 @@ int main(int argc, const char * argv[]) {
                 res += p1 * M[(i-1) % 2][k];
             }
         }
-//        cout << "Check " << pp << endl;
-        out << res * L << endl;
+        cout << setprecision(16) << res * L << endl;
     }
     in.close();
     out.close();
