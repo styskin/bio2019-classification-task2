@@ -30,58 +30,32 @@ int main(int argc, const char * argv[]) {
         // p
         // k - number of reads
         double res = 0;
-        double cnk = 1;
         double pp = 0;
         double tp = pow(1.0 * (L - n) / L, k);
         pp += tp;
         res += tp * 0.75;
+        double p1 = pow(1.0 * (L - n) / L, k);
         for (int i = 1; i <= k; ++i) {
-            // 0.214491825
-            // 0,034416825
-            cnk = cnk * (k - i + 1) / i;
-            double p1 = cnk * pow(1.0 * (n) / L, i) * pow(1.0 * (L - n) / L, k - i);
+            p1 *= (1.0 * (k - i + 1) / i) * (1.0 * n / (L - n));
             pp += p1;
-
-            double px = 0;
-            vector< vector<double> > M(i, vector< double >(i + 1));
-
-//            vector< vector<double> > M(i, vector< double >(i));  // i x i matrix
+            vector< vector<double> > M(2, vector< double >(i + 1));
             M[0][0] = (1-p);
             M[0][1] = p;
             for (int j = 0; j < i-1; ++j) {
+                M[(j+1) % 2][0] = 0;
                 for (int k = 0; k < i; ++k) {
-                    M[j+1][k]     += M[j][k] * (1 - p);
-                    M[j+1][k + 1] += M[j][k] * p;
+                    M[(j+1) % 2][k]     += M[j%2][k] * (1 - p);
+                    M[(j+1) % 2][k + 1] = M[j%2][k] * p;
                 }
             }
-//            double CHECK = 0;
-//            for (int k = 0; k <= i; ++k) {
-//                CHECK += M[i-1][k];
-//            }
-//            cout << "Check " << CHECK << endl;
             if (i % 2 == 0) {
-                res += 0.5 * p1 * M[i-1][i / 2];
+                res += 0.5 * p1 * M[(i-1) % 2][i / 2];
             }
             for (int k = i / 2 + 1; k <= i; ++k) {
-                res += p1 * M[i-1][k];
+                res += p1 * M[(i-1) % 2][k];
             }
-            
-    
-//            double cnk2 = 1;
-//            for (int j = 1; j < i / 2; ++j) {
-//                cnk2 = cnk2 * (i - j + 1) / j;
-//            }
-//            if (i % 2 == 0) { // equal probabilities
-//                cnk2 = cnk2 * (i - (i/2) + 1) / (i/2);
-//                px += 0.5 * pow(p, i / 2) * pow(1 - p, i - i/2) * cnk2;
-//            }
-//            // C N K
-//            for (int j = i/2 + 1; j <= i; ++j) {
-//                cnk2 = cnk2 * (i - j + 1) / j;
-//                px += pow(p, j) * pow(1 - p, i - j) * cnk2; // all errors are errors
-//            }
-//            res += p1 * px;
         }
+//        cout << "Check " << pp << endl;
         out << res * L << endl;
     }
     in.close();
